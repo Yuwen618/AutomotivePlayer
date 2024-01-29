@@ -15,4 +15,8 @@ public interface UIListener {
     void onRepeatMode(int repeatMode);
 
     void onDurationChanged(long aLong);
+
+    void onServiceConnected();
+
+    void onServiceDisconnected();
 }

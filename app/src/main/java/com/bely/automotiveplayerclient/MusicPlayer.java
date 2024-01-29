@@ -59,6 +59,7 @@ public class MusicPlayer extends ConstraintLayout {
     private SourceInfo mCurrentSource;
 
     private long mCurrentDuration;
+    private ImageButton btnBrowse;
 
     List<SourceInfo> mAllSources = new ArrayList<>();
 
@@ -109,6 +110,13 @@ public class MusicPlayer extends ConstraintLayout {
         mCurPosition = findViewById(R.id.text_currentposition);
         mTotalDuration = findViewById(R.id.text_totalduration);
 
+        btnBrowse = findViewById(R.id.imageButton_browse);
+        btnBrowse.setOnClickListener(v -> {
+            //
+            Intent intent = new Intent();
+            intent.setClass(getContext(), BrowseActivity.class);
+            getContext().startActivity(intent);
+        });
         mSourceList.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
@@ -258,6 +266,19 @@ public class MusicPlayer extends ConstraintLayout {
         public void onDurationChanged(long aLong) {
             mCurrentDuration = aLong/1000;
         }
+
+        @Override
+        public void onServiceConnected() {
+            runOnUIThread(() -> btnBrowse.setEnabled(true));
+        }
+
+        @Override
+        public void onServiceDisconnected() {
+            runOnUIThread(() -> {
+                btnBrowse.setEnabled(false);
+                mUIListener.onMetadataChange("Failed to connect", "");
+            });
+        }
     };
 
     private void handlePlaybackState(PlaybackStateCompat state) {
@@ -340,6 +361,7 @@ public class MusicPlayer extends ConstraintLayout {
     }
 
     private void playApp(SourceInfo source) {
+        btnBrowse.setEnabled(false);
         if (source == null) return;
         mCurrentSourceHelper = SourceHelper.getInstance();
         mCurrentSourceHelper.registerUIListener(mUIListener);

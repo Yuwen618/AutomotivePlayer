@@ -57,6 +57,7 @@ public class SourceHelper {
 
 
     public void connect(MusicPlayer.SourceInfo source) {
+        Utils.browser = null;
         if (mBrowser != null && mBrowser.isConnected()) {
             mBrowser.disconnect();
         }
@@ -256,14 +257,20 @@ public class SourceHelper {
                 mMediaController.getTransportControls().play();
                 mRequestToPlay = false;
             }
+            Utils.browser = mBrowser;
+            mUIListener.onServiceConnected();
         }
 
         @Override
         public void onConnectionSuspended() {
+            Utils.browser = null;
+            mUIListener.onServiceDisconnected();
         }
 
         @Override
         public void onConnectionFailed() {
+            Utils.browser = null;
+            mUIListener.onServiceDisconnected();
         }
     };
 
